@@ -41,27 +41,15 @@ jobs:
         pip install --upgrade pip
         pip install --upgrade buildozer cython==0.29.36
 
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          ${{ runner.os }}-buildozer-
-
-    - name: Accept Android SDK licenses and install tools
-      run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-        yes | sdkmanager --licenses || true
-        sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-
     - name: Build with Buildozer
       run: |
         if [ ! -f buildozer.spec ]; then
           buildozer init
         fi
         sed -i 's/#requirements = python3,kivy/requirements = python3,kivy/g' buildozer.spec
+        sed -i 's/#android.api = .*$/android.api = 33/g' buildozer.spec
+        sed -i 's/#android.min_api = .*$/android.min_api = 21/g' buildozer.spec
+        sed -i 's/#android.sdk = .*$/android.sdk = 33/g' buildozer.spec
         sed -i 's/#pandroid.archs = armeabi-v7a/pandroid.archs = armeabi-v7a/g' buildozer.spec
         buildozer -v android debug
 
