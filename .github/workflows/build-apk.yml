@@ -49,6 +49,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildozer-
 
+    - name: Accept Android SDK licenses
+      run: |
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        yes | sdkmanager --licenses || true
+
     - name: Build with Buildozer
       run: |
         if [ ! -f buildozer.spec ]; then
